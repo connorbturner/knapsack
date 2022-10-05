@@ -1,4 +1,4 @@
-#' Brute Force Solution for Knapsack Problem
+#' @title Brute Force Solution for Knapsack Problem
 #'
 #' @param x A data.frame with two columns: w (the weights of the objects) and
 #' v (the values of the objects)

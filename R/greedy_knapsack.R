@@ -1,4 +1,4 @@
-#' @title A Greedy Heuristic Model
+#' @title A Greedy Heuristic Model for the Knapsack Problem
 #'
 #' @description A greedy heuristic approximation model of the Knapsack Problem.
 #'

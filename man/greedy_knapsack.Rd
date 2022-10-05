@@ -12,6 +12,11 @@ v (the values of the objects)}
 
 \item{W}{The maximum weight the knapsack can hold}
 }
+\value{
+A named list with two elements: value (which displays the highest
+value that can be held in the knapsack) and elements (a vector listing the
+item numbers in said knapsack)
+}
 \description{
 A greedy heuristic approximation model of the Knapsack Problem.
 }

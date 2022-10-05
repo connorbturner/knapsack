@@ -7,12 +7,15 @@
 brute_force_knapsack(x, W)
 }
 \arguments{
-\item{x}{Dataset as a dataframe}
+\item{x}{A data.frame with two columns: w (the weights of the objects) and
+v (the values of the objects)}
 
-\item{W}{Kanapsack size}
+\item{W}{The maximum weight the knapsack can hold}
 }
 \value{
-The knapsack with the largest value of the elements added to the knapsack
+A named list with two elements: value (which displays the highest
+value that can be held in the knapsack) and elements (a vector listing the
+item numbers in said knapsack)
 }
 \description{
 Brute Force Solution for Knapsack Problem

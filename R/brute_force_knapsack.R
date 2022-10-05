@@ -1,67 +1,87 @@
 #' Brute Force Solution for Knapsack Problem
 #'
-#' @param x Dataset as a dataframe
-#' @param W Kanapsack size
+#' @param x A data.frame with two columns: w (the weights of the objects) and
+#' v (the values of the objects)
+#' @param W The maximum weight the knapsack can hold
 #'
-#' @return The knapsack with the largest value of the elements added to the knapsack
-#' @export
+#' @return A named list with two elements: value (which displays the highest
+#' value that can be held in the knapsack) and elements (a vector listing the
+#' item numbers in said knapsack)
 #'
 #' @examples brute_force_knapsack(x = knapsack_objects[1:8,], W = 3500)
 #' brute_force_knapsack(x = knapsack_objects[1:12,], W = 3500)
 #' brute_force_knapsack(x = knapsack_objects[1:8,], W = 2000)
 #' brute_force_knapsack(x = knapsack_objects[1:12,], W = 2000)
-#' 
+#'
+#' @export
+#'
+
 brute_force_knapsack <- function(x, W){
-  # Checking for correct Inputs
+
+  # Before we start, we must ensure that the inputs are in the correct format:
+
+  # Checks if W is positive
+  if (W <= 0){
+    stop("Error: 'W' cannot be less than or equal to 0")
+  }
+
+  # Checks if all entries in x are positive
   has.neg <- apply(x, 2, function(row) any(row < 0))
   if (length(which(has.neg)) != 0){
-    stop("Error: Dataframe should be with only positive values")
+    stop("Error: 'x' contains negative entries")
   }
-  
+
+  # Checks if x is a data.frame
   if (!is.data.frame(x)){
-    stop("Error: x is not a data frame")
+    stop("Error: 'x' is not a data.frame")
   }
-  
+
+  # Checks if x contains only two columns
   if (ncol(x) != 2){
-    stop("Error: x must contain only 2 columns w and v")
+    stop("Error: data.frame 'x' should contain only 2 columns, 'w' and 'v'")
   }
-  
-  if (names(x[1]) != "w" ||
-      names(x[2]) != "v"){
-    stop("Column names should be w and v ")
+
+  # Checks if x has proper column names
+  if (colnames(x)[1] != "w" || colnames(x)[2] != "v"){
+    stop("Error: 'x' contains invalid column names. colnames(x) should be 'w' and 'v'.")
   }
-  
-  #getting no of elements is the dataframe
+
+  # First, we set a variable n equal to the number of rows and define an empty
+  # vector for combination values and an empty list for element combinations
   n <-  nrow(x)
-  
-  # Defining two nul lists to store values and elements of different combinations
-  values <- NULL
-  element_p <- vector(mode = "list")
-  
-  # getting df of combinations
-  com <- lapply(c(1:(2^n-1)),function(x){ as.integer((intToBits(x)))})
-  
-  for (item in com){
-    #Getting first combination and multiplying with a vector from 1:n to get the raw numbers
-    combin <- (item[1:n]) * c(1:n)
-    
-    #getting the sum of  weight and value of the combination
-    s <- apply(x[combin,],2,sum)
-    
-    # if weight is less than W appending to the predifined lists
+  valuevec <- c()
+  elementlist <- list()
+
+  # Next, we create a data frame consisting of all the possible combination
+  # possibilities for our knapsack:
+  combinations <- lapply(c(1:(2^n-1)),function(x){ as.integer((intToBits(x)))})
+
+  # Then, we define each combination, find the value and weight for each,
+  # determine which ones can fit in the knapsack, and record eligible options:
+  for (item in combinations){
+
+    # Defines what elements are in this combination
+    combo <- (item[1:n]) * c(1:n)
+
+    # Gives us the total weight and value of this combination
+    s <- apply(x[combo,], 2, sum)
+
+    # If the weight of this combination fits is less than W, we append the
+    # value to our value vector and append the combination to our element list
     if (s[1] < W){
       s <- unname(s)
-      values <- append(values,s[2])
-      ele <- unlist(sapply(combin,function(x) {x[x!=0]}))
-      element_p <- append(element_p,list(ele))
-
+      valuevec <- append(valuevec,s[2])
+      ele <- unlist(sapply(combo, function(x) {x[x != 0]}))
+      elementlist <- append(elementlist, list(ele))
     }
   }
-  #Selecting max value and corresponding elements
-  value = max(values)
-  value_index <- match(value,values)
-  elements <- unlist(element_p[value_index])
-  #Creating a named list as the output
-  result <- list(Value = value, Elements = elements)
-  return(result)
+
+  # Finally, we find the eligible combination with the highest value and
+  # return this information as a named list:
+  value = max(valuevec)
+  valindex <- match(value, valuevec)
+  elements <- unlist(elementlist[valindex])
+  returnlist <- list("value" = round(value, 0), "elements" = elements)
+
+  return(returnlist)
 }

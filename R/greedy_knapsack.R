@@ -6,6 +6,10 @@
 #' v (the values of the objects)
 #' @param W The maximum weight the knapsack can hold
 #'
+#' @return A named list with two elements: value (which displays the highest
+#' value that can be held in the knapsack) and elements (a vector listing the
+#' item numbers in said knapsack)
+#'
 #' @details This model approximates a solution to the knapsack problem with a
 #' value of at least m/2 (or 1/2 the maximum value that could be found to fit).
 #' It does this by sorting each item in descending order by value per unit of
@@ -29,19 +33,25 @@ greedy_knapsack <- function(x, W){
     stop("Error: 'W' cannot be less than or equal to 0")
   }
 
+  # Checks if all entries in x are positive
+  has.neg <- apply(x, 2, function(row) any(row < 0))
+  if (length(which(has.neg)) != 0){
+    stop("Error: 'x' contains negative entries")
+  }
+
   # Checks if x is a data.frame
-  if (class(x) != "data.frame"){
+  if (!is.data.frame(x)){
     stop("Error: 'x' is not a data.frame")
   }
 
   # Checks if x contains only two columns
   if (ncol(x) != 2){
-    stop("Error: data.frame 'x' should have only 2 columns")
+    stop("Error: data.frame 'x' should contain only 2 columns, 'w' and 'v'")
   }
 
   # Checks if x has proper column names
   if (colnames(x)[1] != "w" || colnames(x)[2] != "v"){
-    stop("Error: 'x' contains invalid column names")
+    stop("Error: 'x' contains invalid column names. colnames(x) should be w and v.")
   }
 
   # First, we create a new variable for unit value and use it to rank each

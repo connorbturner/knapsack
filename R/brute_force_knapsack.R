@@ -17,6 +17,9 @@ brute_force_knapsack <- function(x, W){
   if (length(which(has.neg)) != 0){
     stop("Error: Dataframe should be with only positive values")
   }
+  if (W<0){
+    stop("Error: Knapzack size cannot be negative")
+  }
   
   if (!is.data.frame(x)){
     stop("Error: x is not a data frame")
@@ -62,6 +65,6 @@ brute_force_knapsack <- function(x, W){
   value_index <- match(value,values)
   elements <- unlist(element_p[value_index])
   #Creating a named list as the output
-  result <- list(Value = value, Elements = elements)
+  result <- list(value = value, elements = elements)
   return(result)
 }

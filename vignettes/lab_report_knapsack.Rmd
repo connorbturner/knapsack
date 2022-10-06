@@ -1,0 +1,32 @@
+---
+title: "Advanced R Programming Lab 6 Report"
+author: Connor Turner and Sachini Bambaranda
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{lab_report_knapsack}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>"
+)
+```
+
+```{r setup}
+#library(knapsack)
+```
+
+**Question 1: How much time does it take to run the brute force algorithm for n = 16 objects?**
+
+**Question 2: How much time does it takes to run the dynamic algorithm for n = 500 objects?**
+
+**Question 3: How much time does it takes to run the greedy heuristic algorithm for n = 1000000 objects?**
+
+**Question 4: What performance gain could you get by using Rcpp and C++?**
+
+**Question 5: What performance gain could you get by trying to improving your code?**
+
+One slight improvement we made came on the dynamic algorithm. Originally, we had named all the rows and columns in 'mat' to indicate the row number and weight. But this meant that when we were working on the for loops, we had to take the extra step to convert the index numbers to characters, otherwise it gave us an error. When we got rid of the row and column names and stopped having to convert to characters, it helped a bit with the speed. Other than that, we didn't face many bottlenecks in the brute force or greedy algorithms, and the dynamic algorithm we gained quite a bit of time using Rcpp.

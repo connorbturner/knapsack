@@ -2,7 +2,7 @@
 % Please edit documentation in R/brute_force_knapsack.R
 \name{brute_force_knapsack}
 \alias{brute_force_knapsack}
-\title{Brute Force Solution for Knapsack Problem}
+\title{Brute Force Solution for the Knapsack Problem}
 \usage{
 brute_force_knapsack(x, W)
 }
@@ -18,7 +18,7 @@ value that can be held in the knapsack) and elements (a vector listing the
 item numbers in said knapsack)
 }
 \description{
-Brute Force Solution for Knapsack Problem
+Brute Force Solution for the Knapsack Problem
 }
 \examples{
 brute_force_knapsack(x = knapsack_objects[1:8,], W = 3500)

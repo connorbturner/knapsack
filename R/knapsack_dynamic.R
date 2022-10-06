@@ -43,36 +43,51 @@ knapsack_dynamic <- function(x, W){
     stop("Error: 'x' contains invalid column names. colnames(x) should be 'w' and 'v'.")
   }
 
+  # First, we create a variable n to indicate the number of rows and two
+  # matrices: mat will store the current values as we go through the loop and
+  # mem will serve as our dynamic memory:
   n <- nrow(x)
-  mat <- matrix(0,nrow =n+1, ncol = W+1)
-  rownames(mat) <- c(0:n)
-  colnames(mat) <- c(0:W)
-  
-  for (i in 1:n){
+  mat <- matrix(0, nrow = (n + 1), ncol = (W + 1))
+  mem <- matrix(0, nrow = 1, ncol = (n + 1))
+
+  # Next, we iterate through each row in x and viable weight up to W to fill
+  # out our two matrices:
+  for (i in 2:(n+1)){
     for (j in 1:W){
-      if (x$w[i]>j){
-        mat[as.character(i),as.character(j)] <-  mat[as.character(i-1),as.character(j)]
+
+      # If the weight of the current object is less than the current weight
+      # (defined by j), we skip over it
+      if (isTRUE(x$w[i] > j)){
+        mat[i, j] <-  mat[i-1, j]
       }
+
+      # If the weight is less than j, we determine if the value is worth
+      # placing it in the knapsack
       else{
-        mat[as.character(i),as.character(j)] <- 
-          max(mat[as.character(i-1),as.character(j)],
-              mat[as.character(i-1),as.character(j-x$w[i])]+x$v[i])
+        mat[i, j] <-
+          max(mat[i-1, j],
+              mat[i-1, j-x$w[i]] + x$v[i])
+
+        # We then record this entry in memory if it is not currently recorded
+        if (!(mat[i, j] %in% mem) && i != (n + 1)){
+          prevval <- mat[i-1, j-x$w[i]]
+          previndex <- match(prevval, mem)
+          addmemrow <- c(mat[i,j], mem[previndex, 2:(n+1)])
+          addmemrow[i+1] <- 1
+          mem <- rbind(mem, addmemrow)
+        }
       }
     }
   }
-  el <- NULL
-  max_v = mat[as.character(n),as.character(W)]
-  max_value = max_v
-  for (i in n:1){
-    if(max_v %in% mat[as.character(i),]){
-      if(max_v %in% mat[as.character(i-1),]){
-        next
-      }
-    }
-    el <- append(el,i)
-    max_v <- max_v - x$v[i]
-  }
-  result = c(value = max_value, elements = list(el))
-  return(result)
-  
+
+  # Finally, we pull our maximum value from mat, pull our optimal combination
+  # from mem, and return the results in a named list:
+  value <- mat[n,W]
+  index <- match(mat[n,W], mem[,1])
+  combination <- mem[index, 2:(n+1)]
+  elements <- 1:n
+  elements <- elements[which(combination == 1)]
+
+  returnlist = list("value" = round(value, 0), "elements" = elements)
+  return(returnlist)
 }

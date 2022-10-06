@@ -43,34 +43,36 @@ knapsack_dynamic <- function(x, W){
     stop("Error: 'x' contains invalid column names. colnames(x) should be 'w' and 'v'.")
   }
 
-  if(length(mem) != 0){
-    return(mem)
-  }
-
   n <- nrow(x)
-  if (n == 0 || W == 0){
-
-    result <- 0
-
-  } else if(x$w[n] > W){
-
-    x <- x[-nrow(x),]
-    result <- knapsack_dynamic(x,W)
-
-  } else{
-    #Getting values of the nth element
-    value <- x$v[n]
-    weight <- x$w[n]
-    #Removing nth row from the data frame
-    x <- x[-nrow(x),]
-
-    v1 <- knapsack_dynamic(x,W)
-    v2 <- value + knapsack_dynamic(x,W - weight)
-
-    result <- max(v1,v2)
+  mat <- matrix(0,nrow =n+1, ncol = W+1)
+  rownames(mat) <- c(0:n)
+  colnames(mat) <- c(0:W)
+  
+  for (i in 1:n){
+    for (j in 1:W){
+      if (x$w[i]>j){
+        mat[as.character(i),as.character(j)] <-  mat[as.character(i-1),as.character(j)]
+      }
+      else{
+        mat[as.character(i),as.character(j)] <- 
+          max(mat[as.character(i-1),as.character(j)],
+              mat[as.character(i-1),as.character(j-x$w[i])]+x$v[i])
+      }
+    }
   }
-
-  mem <- append(mem,result)
-
+  el <- NULL
+  max_v = mat[as.character(n),as.character(W)]
+  max_value = max_v
+  for (i in n:1){
+    if(max_v %in% mat[as.character(i),]){
+      if(max_v %in% mat[as.character(i-1),]){
+        next
+      }
+    }
+    el <- append(el,i)
+    max_v <- max_v - x$v[i]
+  }
+  result = c(value = max_value, elements = list(el))
   return(result)
+  
 }

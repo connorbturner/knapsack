@@ -2,7 +2,7 @@
 % Please edit documentation in R/greedy_knapsack.R
 \name{greedy_knapsack}
 \alias{greedy_knapsack}
-\title{A Greedy Heuristic Model}
+\title{A Greedy Heuristic Model for the Knapsack Problem}
 \usage{
 greedy_knapsack(x, W)
 }

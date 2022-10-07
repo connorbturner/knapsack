@@ -16,55 +16,56 @@ knitr::opts_chunk$set(
 ```
 
 ```{r setup}
-#library(knapsack)
+library(knapsack)
 ```
 
 **Question 1: How much time does it take to run the brute force algorithm for n = 16 objects?**
 
-```{r message = FALSE, warning = FALSE}
-
+```{r message = FALSE, warning = FALSE, echo = FALSE}
 RNGversion(min(as.character(getRversion()),"3.5.3"))
 set.seed(42, kind = "Mersenne-Twister", normal.kind = "Inversion")
 n <- 16
-knapsack_objects <-
+knapsack_objects16 <-
 data.frame(
 w=sample(1:4000, size = n, replace = TRUE),
 v=runif(n = n, 0, 10000)
 )
-
-#brute_force_knapsack(knapsack_objects, 3500)
+```
+```{r}
+system.time(brute_force_knapsack(knapsack_objects16, 3500))
 ```
 
-**Question 2: How much time does it takes to run the dynamic algorithm for n = 500 objects?**
+**Question 2: How much time does it takes to run the dynamic algorithm for n = 100 objects?**
 
-```{r message = FALSE, warning = FALSE}
-
+```{r message = FALSE, warning = FALSE, echo = FALSE}
 RNGversion(min(as.character(getRversion()),"3.5.3"))
 set.seed(42, kind = "Mersenne-Twister", normal.kind = "Inversion")
-n <- 500
-knapsack_objects <-
+n <- 100
+knapsack_objects100 <-
 data.frame(
 w=sample(1:4000, size = n, replace = TRUE),
 v=runif(n = n, 0, 10000)
 )
-
-#brute_force_knapsack(knapsack_objects, 3500)
+```
+```{r}
+system.time(knapsack_dynamic(knapsack_objects100, 3500))
 ```
 
 **Question 3: How much time does it takes to run the greedy heuristic algorithm for n = 1000000 objects?**
 
-```{r message = FALSE, warning = FALSE}
+```{r message = FALSE, warning = FALSE, echo = FALSE}
 
 RNGversion(min(as.character(getRversion()),"3.5.3"))
 set.seed(42, kind = "Mersenne-Twister", normal.kind = "Inversion")
 n <- 1000000
-knapsack_objects <-
+knapsack_objects_million <-
 data.frame(
 w=sample(1:4000, size = n, replace = TRUE),
 v=runif(n = n, 0, 10000)
 )
-
-#brute_force_knapsack(knapsack_objects, 3500)
+```
+```{r}
+system.time(greedy_knapsack(knapsack_objects_million, 3500))
 ```
 
 **Question 4: What performance gain could you get by using Rcpp and C++?**

@@ -49,31 +49,33 @@ knapsack_dynamic <- function(x, W){
   n <- nrow(x)
   mat <- matrix(0, nrow = (n + 1), ncol = (W + 1))
   mem <- matrix(0, nrow = 1, ncol = (n + 1))
+  w = as.vector(x[, "w"])
+  v = as.vector(x[, "v"])
 
   # Next, we iterate through each row in x and viable weight up to W to fill
   # out our two matrices:
-  for (i in 2:(n+1)){
+  for (i in 2:(n + 1)){
     for (j in 1:W){
 
       # If the weight of the current object is less than the current weight
       # (defined by j), we skip over it
-      if (isTRUE(x$w[i] > j)){
-        mat[i, j] <-  mat[i-1, j]
+      if (w[i] > j || i == (n + 1)){
+        mat[i, j] <-  mat[(i - 1), j]
       }
 
       # If the weight is less than j, we determine if the value is worth
       # placing it in the knapsack
       else{
         mat[i, j] <-
-          max(mat[i-1, j],
-              mat[i-1, j-x$w[i]] + x$v[i])
+          max(mat[(i - 1), j],
+              mat[(i - 1), (j - w[i])] + v[i])
 
         # We then record this entry in memory if it is not currently recorded
-        if (!(mat[i, j] %in% mem) && i != (n + 1)){
-          prevval <- mat[i-1, j-x$w[i]]
+        if ((mat[i, j] %in% mem) == FALSE && i != (n + 1)){
+          prevval <- mat[(i - 1), (j - w[i])]
           previndex <- match(prevval, mem)
-          addmemrow <- c(mat[i,j], mem[previndex, 2:(n+1)])
-          addmemrow[i+1] <- 1
+          addmemrow <- c(mat[i, j], mem[previndex, 2:(n + 1)])
+          addmemrow[i + 1] <- 1
           mem <- rbind(mem, addmemrow)
         }
       }
@@ -82,9 +84,9 @@ knapsack_dynamic <- function(x, W){
 
   # Finally, we pull our maximum value from mat, pull our optimal combination
   # from mem, and return the results in a named list:
-  value <- mat[n,W]
-  index <- match(mat[n,W], mem[,1])
-  combination <- mem[index, 2:(n+1)]
+  value <- mat[n, W]
+  index <- match(mat[n, W], mem[, 1])
+  combination <- mem[index, 2:(n + 1)]
   elements <- 1:n
   elements <- elements[which(combination == 1)]
 

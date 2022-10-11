@@ -4,7 +4,7 @@
 \alias{knapsack_dynamic}
 \title{A Dynamic Programming Model for the Knapsack Problem}
 \usage{
-knapsack_dynamic(x, W)
+knapsack_dynamic(x, W, fast = FALSE)
 }
 \arguments{
 \item{x}{A data.frame with two columns: w (the weights of the objects) and

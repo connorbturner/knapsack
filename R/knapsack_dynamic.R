@@ -3,6 +3,8 @@
 #' @param x A data.frame with two columns: w (the weights of the objects) and
 #' v (the values of the objects)
 #' @param W The maximum weight the knapsack can hold
+#' @param fast If TRUE, utilizes C++ code to run the function faster. Default
+#' is FALSE
 #'
 #' @return A named list with two elements: value (which displays the highest
 #' value that can be held in the knapsack) and elements (a vector listing the

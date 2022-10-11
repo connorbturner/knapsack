@@ -11,6 +11,9 @@ knapsack_dynamic(x, W, fast = FALSE)
 v (the values of the objects)}
 
 \item{W}{The maximum weight the knapsack can hold}
+
+\item{fast}{If TRUE, utilizes C++ code to run the function faster. Default
+is FALSE}
 }
 \value{
 A named list with two elements: value (which displays the highest

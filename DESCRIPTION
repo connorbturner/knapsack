@@ -1,6 +1,6 @@
 Package: knapsack
 Title: Computational Complexity Using the Knapsack Problem
-Version: 1.0.0
+Version: 1.0.1
 Authors@R: 
     person("Connor", "Turner", , "contu434@student.liu.se", 
            role = c("aut", "cre"))

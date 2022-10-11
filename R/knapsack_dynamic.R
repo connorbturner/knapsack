@@ -71,7 +71,7 @@ knapsack_dynamic <- function(x, W, fast = FALSE){
       names(mem) = NULL
 
     } else {
-      stop("Error: Fast implementation cannot be completed. Required package 'Rcpp' not loaded.")
+      stop("Error: Fast implementation cannot be completed. Required package 'Rcpp' not installed.")
     }
 
   } else {

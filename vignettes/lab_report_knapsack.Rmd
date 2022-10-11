@@ -21,7 +21,9 @@ library(knapsack)
 
 **Question 1: How much time does it take to run the brute force algorithm for n = 16 objects?**
 
-```{r message = FALSE, warning = FALSE, echo = FALSE}
+It takes around five seconds for our brute force algorithm to go through 16 objects
+
+```{r message = FALSE, warning = FALSE}
 RNGversion(min(as.character(getRversion()),"3.5.3"))
 set.seed(42, kind = "Mersenne-Twister", normal.kind = "Inversion")
 n <- 16
@@ -35,26 +37,29 @@ v=runif(n = n, 0, 10000)
 system.time(brute_force_knapsack(knapsack_objects16, 3500))
 ```
 
-**Question 2: How much time does it takes to run the dynamic algorithm for n = 100 objects?**
+**Question 2: How much time does it takes to run the dynamic algorithm for n = 500 objects?**
 
-```{r message = FALSE, warning = FALSE, echo = FALSE}
+It takes our dynamic algorithm roughly 60 seconds to go through 500 objects
+
+```{r message = FALSE, warning = FALSE}
 RNGversion(min(as.character(getRversion()),"3.5.3"))
 set.seed(42, kind = "Mersenne-Twister", normal.kind = "Inversion")
-n <- 100
-knapsack_objects100 <-
+n <- 500
+knapsack_objects500 <-
 data.frame(
 w=sample(1:4000, size = n, replace = TRUE),
 v=runif(n = n, 0, 10000)
 )
 ```
 ```{r}
-system.time(knapsack_dynamic(knapsack_objects100, 3500))
+system.time(knapsack_dynamic(knapsack_objects500, 3500))
 ```
 
 **Question 3: How much time does it takes to run the greedy heuristic algorithm for n = 1000000 objects?**
 
-```{r message = FALSE, warning = FALSE, echo = FALSE}
+Our greedy algorithm goes through a million objects in about 0.15 seconds
 
+```{r message = FALSE, warning = FALSE}
 RNGversion(min(as.character(getRversion()),"3.5.3"))
 set.seed(42, kind = "Mersenne-Twister", normal.kind = "Inversion")
 n <- 1000000
@@ -70,53 +75,22 @@ system.time(greedy_knapsack(knapsack_objects_million, 3500))
 
 **Question 4: What performance gain could you get by using Rcpp and C++?**
 
-(Connor) No matter what I tried, I could not get my Rcpp code to work. I attempted to redo the nested for loop inside the dynamic function, and it started off well enough. But for whatever reason, attempting to use the max() function (*or even using an if/else statement to compare values*) would crash Rstudio with a fatal error. No matter how much research I did online or how much tweaking I did to the rest of the function, the same crash would occur, and I wasn't able to find a fix to this error before it was too late. Below, I have included the code I was trying to implement so that I can at least prove that this was attempted:
-
-I could not pass a matrix or subset rows, so my idea was to convert the matrix mat from the dynamic function into a data frame, transpose it so that rows turned into columns, and then put everything back once the values have been placed. Here is an example of what that would have looked like:
+The answer to this question depends on how many objects we are iterating through, and I am not sure why. As you can see in the code below, the C++ code performs about seven times faster than the regular R code when n = 8. But for some reason, once we get to n = 50, the performance gets to be about the same, and by n = 100 the C++ code performs nearly seven times *slower* than the R code. This doesn't make any sense to me, as the C++ code mirrors the nested for loop in knapsack_dynamic() almost to a T and the function is only being called once. Even after going through the code, taking out unnecessary steps, and streamlining as much as possible, the Rcpp code still couldn't seem to handle large data sets, and I for the life of me cannot figure out why. Perhaps it is something with Rcpp specifically, but there is nothing in the Rcpp function that I could see causing this slowdown - or at least this much of a slowdown. Any suggestions or advice would be appreciated.
 
 ```{r message = FALSE, warning = FALSE}
-# mat <- matrix(0, nrow = (8 + 1), ncol = (3500 + 1))
-# mat <- t(mat)
-# mat <- as.data.frame(mat)
+# When n ~ 10, the C++ code is significantly faster:
+system.time(knapsack_dynamic(knapsack_objects[1:8,], 3500))
+system.time(knapsack_dynamic(knapsack_objects[1:8,], 3500, fast = TRUE))
+
+# When n ~ 50, performance is about the same:
+system.time(knapsack_dynamic(knapsack_objects[1:50,], 3500))
+system.time(knapsack_dynamic(knapsack_objects[1:50,], 3500, fast = TRUE))
+
+# When n ~ 100, the C++ code is significantly slower:
+system.time(knapsack_dynamic(knapsack_objects[1:100,], 3500))
+system.time(knapsack_dynamic(knapsack_objects[1:100,], 3500, fast = TRUE))
 ```
-
-Here is my Rcpp code up to the max function. Essentially, it is supposed to replace the nested for loop in the dynamic function and recreate the if/else statement within. It takes the data.frame x and integer W from the function arguments, the data.frame version of mat (mem would have been included too, but for reasons specified above I didn't get to that part of the loop), and the number of rows n. I have commented out the code so that it doesn't crash this report.
-
-```{r}
-# Rcpp::cppFunction(code = '
-#       int cppfor (DataFrame x, DataFrame mat, int n, int W) {
-# 
-#       NumericVector w; x["w"];                      # Vectorize knapsack_objects
-#       NumericVector v; x["v"];
-# 
-#       for(int i = 1; i <= n; i++){
-#         NumericVector matrow; mat[i];               # Vectorize the current and  
-#         NumericVector prevmatrow; mat[i-1];         # previous rows of mat
-# 
-#           for(int j = 0; j <= W; j++){
-#           
-#             if(w[i] > j) {
-#               matrow[j] = prevmatrow[j];            # If the weight of the object
-#                                                     # is too big we skip
-#             } else {
-#               matrow[j] = std::max(prevmatrow[j], (prevmatrow[j - w[i]] + v[i]));
-#               
-#                                                     # This should work exactly
-#                                                     # like the max() statement in
-#                                                     # the regular function, but
-#                                                     # instead it crashes RStudio
-#                                                     # with a "fatal error"
-#             }
-#           }
-#         mat[i] = matrow;                            # Replace the current row of
-#                                                     # mat with the vector we made
-#       }
-#       return 0;}')
-
-```
-
-I've gone over the code a million times and changed things every which way, the code seems solid and it should work in theory. There shouldn't be issues with indexing, the function is able to be created so Rcpp doesn't seem to see any errors or red flags, and everything else follows the other function exactly. I don't understand what is causing RStudio to crash and it is driving me insane. If you can provide any feedback for future reference, it would be greatly appreciated. This is my first time attempting to code anything in C++ so I'm sure I made an embarrassing rookie error on this and that is what is causing the problem. If anyone should receive a failing grade because of this not being fully implemented, it should be me because I was trusted to figure this out and I failed to do so in time.
 
 **Question 5: What performance gain could you get by trying to improving your code?**
 
-Two slight improvements we made came on the dynamic algorithm. Originally, we had named all the rows and columns in 'mat' to indicate the row number and weight. But this meant that when we were working on the for loops, we had to take the extra step to convert the index numbers to characters, otherwise it gave us an error. When we got rid of the row and column names and stopped having to convert to characters, it helped a bit with the speed. I also converted the columns in the data frame to vectors at the beginning of the dynamic function, and that improved things somewhat. Other than that, we didn't face many bottlenecks in the brute force or greedy algorithms, and I documented my struggles with Rcpp above.
+Two slight improvements we made came on the dynamic algorithm. Originally, we had named all the rows and columns in 'mat' to indicate the row number and weight. But this meant that when we were working on the for loops, we had to take the extra step to convert the index numbers to characters, otherwise it gave us an error. When we got rid of the row and column names and stopped having to convert to characters, it helped a bit with the speed. I also converted the columns in the data frame to vectors at the beginning of the dynamic function, and that improved things somewhat. Additionally, we received a sizable performance gain on the dynamic function by making some adjustments to the match() functions in the code. Essentially, instead of searching through every entry in mem, I adjusted it to only look through the first column where the values were stored. This lowered runtime significantly - particularly for a large number of objects.
